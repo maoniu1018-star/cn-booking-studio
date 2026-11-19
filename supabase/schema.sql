@@ -46,7 +46,7 @@ create table if not exists public.bookings (
   status text not null default 'pending' check (status in ('pending','confirmed','cancelled','completed')),
   created_at timestamptz not null default now(),
   constraint bookings_service_belongs_to_business
-    foreign key (business_id, service_id) references public.services(business_id, id),
+    foreign key (business_id, service_id) references public.services(business_id, id)
 );
 
 -- A time slot can only have one live booking per business. Cancelled bookings release it.
