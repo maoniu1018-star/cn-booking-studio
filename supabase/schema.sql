@@ -47,12 +47,11 @@ create table if not exists public.bookings (
   created_at timestamptz not null default now(),
   constraint bookings_service_belongs_to_business
     foreign key (business_id, service_id) references public.services(business_id, id),
-  constraint bookings_not_in_past check (
-    appointment_date >= (now() at time zone 'Asia/Taipei')::date
-  )
 );
 
 -- A time slot can only have one live booking per business. Cancelled bookings release it.
+-- Remove the legacy CHECK if this script is rerun after an earlier partial setup.
+alter table public.bookings drop constraint if exists bookings_not_in_past;
 create unique index if not exists bookings_unique_live_slot
   on public.bookings (business_id, appointment_date, start_time)
   where status in ('pending','confirmed');
