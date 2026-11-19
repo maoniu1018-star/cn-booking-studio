@@ -3,5 +3,5 @@
 // 這是可公開使用的前端金鑰；絕不可填入 service_role 或 Secret key。
 window.CN_BOOKING_CONFIG = {
   url: "https://hfkyvvyrxauqgoridkmqk.supabase.co",
-  anonKey: "請填入 Supabase Publishable／anon public key"
+  anonKey: "sb_publishable_MW6esaKLkE5ILEbWVGfMWQ_HRPU-4W-"
 };
