@@ -46,7 +46,37 @@ async function init(){
  const {data:services,error:se}=await sb.from('services').select('id,name,duration_minutes,price,description').eq('business_id',b.id).eq('is_active',true).order('created_at');
  const select=$('service');select.innerHTML='';
  if(se||!services||!services.length){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='店家尚未設定可預約服務，請稍後再試。';return}
- services.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name+(s.price==null?'':'｜select.append(o)});
+ services.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name+(s.price==null?'':'｜
+ const today=new Date();const local=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);$('date').min=local;
+}
+$('bookingForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!sb||!business)return;
+ const btn=$('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+ try{
+ const payload={business_id:business.id,service_id:$('service').value,customer_name:$('customer').value.trim(),customer_contact:$('contact').value.trim(),appointment_date:$('date').value,start_time:$('time').value,notes:$('notes').value.trim(),status:'pending'};
+ const {error}=await sb.from('bookings').insert(payload);
+ if(error){if(error.code==='23505')throw new Error('這個時間已有其他預約，請改選其他時間。');throw error}
+ msg('預約已送出！目前狀態為待確認，請留意店家後續聯絡。','ok');$('bookingForm').reset();
+ }catch(err){msg('預約未成功：'+(err.message||'請稍後再試。'),'error')}
+ finally{btn.disabled=false;btn.textContent='送出預約'}
+});
+init().catch(e=>{ $('bookingPanel').classList.add('hidden');$('storeDescription').textContent='載入失敗：'+(e.message||'請稍後再試。')});
+</script></body></html>+s.price);select.append(o)});
+ const today=new Date();const local=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);$('date').min=local;
+}
+$('bookingForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!sb||!business)return;
+ const btn=$('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+ try{
+ const payload={business_id:business.id,service_id:$('service').value,customer_name:$('customer').value.trim(),customer_contact:$('contact').value.trim(),appointment_date:$('date').value,start_time:$('time').value,notes:$('notes').value.trim(),status:'pending'};
+ const {error}=await sb.from('bookings').insert(payload);
+ if(error){if(error.code==='23505')throw new Error('這個時間已有其他預約，請改選其他時間。');throw error}
+ msg('預約已送出！目前狀態為待確認，請留意店家後續聯絡。','ok');$('bookingForm').reset();
+ }catch(err){msg('預約未成功：'+(err.message||'請稍後再試。'),'error')}
+ finally{btn.disabled=false;btn.textContent='送出預約'}
+});
+init().catch(e=>{ $('bookingPanel').classList.add('hidden');$('storeDescription').textContent='載入失敗：'+(e.message||'請稍後再試。')});
+</script></body></html>+s.price);select.append(o)});
  const today=new Date();const local=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);$('date').min=local;
 }
 $('bookingForm').addEventListener('submit',async e=>{
