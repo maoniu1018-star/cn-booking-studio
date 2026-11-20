@@ -12,7 +12,7 @@
 <body>
 <header class="top"><div class="wrap"><div class="brand">CN Booking Studio<small>ONLINE BOOKING</small></div></div></header>
 <main class="wrap">
-<div class="eyebrow">ONLINE APPOINTMENT</div><h1 id="storeName">線上預約</h1><p id="storeDescription" class="muted">請選擇服務與預約時間。</p>
+<div class="eyebrow">ONLINE APPOINTMENT</div><h1 id="storeName">線上預約</h1><p id="storeDescription" class="muted">請選擇服務與方便洽談的日期、時間。</p>
 <section class="panel" id="bookingPanel">
 <form id="bookingForm">
 <div class="field"><label for="service">預約服務</label><select id="service" required><option value="">載入服務中…</option></select></div>
@@ -38,7 +38,7 @@ async function init(){
  const cfg=window.CN_BOOKING_CONFIG||{};
  if(!cfg.url||!cfg.anonKey||cfg.anonKey.includes('請填入')){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='此店家的線上預約尚未完成公開設定，請聯絡店家。';return}
  if(!slug){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='預約網址缺少店家代稱。';return}
- if(!window.supabase){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='預約服務載入失敗，請稍後再試。';return}
+ if(!window.supabase){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='服務資料載入失敗，請稍後再試。';return}
  sb=window.supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:false,autoRefreshToken:false}});
  const {data:b,error}=await sb.from('businesses').select('id,name,description').eq('slug',slug).eq('is_active',true).maybeSingle();
  if(error||!b){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='找不到此店家，或店家目前未開放預約。';return}
@@ -46,7 +46,22 @@ async function init(){
  const {data:services,error:se}=await sb.from('services').select('id,name,duration_minutes,price,description').eq('business_id',b.id).eq('is_active',true).order('created_at');
  const select=$('service');select.innerHTML='';
  if(se||!services||!services.length){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='店家尚未設定可預約服務，請稍後再試。';return}
- services.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name+'（'+s.duration_minutes+' 分鐘）'+(s.price==null?'':'｜$'+s.price);select.append(o)});
+ services.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name+(s.price==null?'':'｜select.append(o)});
+ const today=new Date();const local=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);$('date').min=local;
+}
+$('bookingForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!sb||!business)return;
+ const btn=$('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+ try{
+ const payload={business_id:business.id,service_id:$('service').value,customer_name:$('customer').value.trim(),customer_contact:$('contact').value.trim(),appointment_date:$('date').value,start_time:$('time').value,notes:$('notes').value.trim(),status:'pending'};
+ const {error}=await sb.from('bookings').insert(payload);
+ if(error){if(error.code==='23505')throw new Error('這個時間已有其他預約，請改選其他時間。');throw error}
+ msg('預約已送出！目前狀態為待確認，請留意店家後續聯絡。','ok');$('bookingForm').reset();
+ }catch(err){msg('預約未成功：'+(err.message||'請稍後再試。'),'error')}
+ finally{btn.disabled=false;btn.textContent='送出預約'}
+});
+init().catch(e=>{ $('bookingPanel').classList.add('hidden');$('storeDescription').textContent='載入失敗：'+(e.message||'請稍後再試。')});
+</script></body></html>+s.price);select.append(o)});
  const today=new Date();const local=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);$('date').min=local;
 }
 $('bookingForm').addEventListener('submit',async e=>{
