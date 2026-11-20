@@ -46,7 +46,7 @@ async function init(){
  const {data:services,error:se}=await sb.from('services').select('id,name,duration_minutes,price,description').eq('business_id',b.id).eq('is_active',true).order('created_at');
  const select=$('service');select.innerHTML='';
  if(se||!services||!services.length){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='店家尚未設定可預約服務，請稍後再試。';return}
- services.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name+(s.price==null?'':'｜
+ services.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;select.append(o)});
  const today=new Date();const local=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);$('date').min=local;
 }
 $('bookingForm').addEventListener('submit',async e=>{
