@@ -182,3 +182,14 @@ with check (exists (
 --    after the owner has registered; do not expose the service_role key in frontend code.
 -- 2) This starter schema does not yet implement opening hours, holidays, staff calendars,
 --    payment, messaging, or automated reminders.
+
+
+-- Explicit Data API privileges (RLS policies alone do not grant table access).
+grant usage on schema public to anon, authenticated;
+grant select on public.businesses, public.services to anon, authenticated;
+grant insert on public.bookings to anon, authenticated;
+grant select on public.business_members, public.platform_admins to authenticated;
+grant update on public.businesses to authenticated;
+grant insert, update, delete on public.services to authenticated;
+grant select, update on public.bookings to authenticated;
+revoke all on public.business_members, public.platform_admins from anon;
