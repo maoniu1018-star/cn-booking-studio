@@ -23,11 +23,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-config.js"></script>
 <script>
 const $=id=>document.getElementById(id),slug=new URLSearchParams(location.search).get('store');
-let sb=null,business=null,hours=[],services=[];
+let sb=null,business=null,hours=[],services=[],closures=[];
 function msg(t,type=''){const el=$('message');el.textContent=t;el.className='msg show '+type}
 function localDate(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function selectedHours(){if(!$('date').value)return null;return hours.find(h=>h.day_of_week===new Date($('date').value+'T00:00:00').getDay())||null}
-function updateTimeLimits(){const h=selectedHours(),service=services.find(s=>s.id===$('service').value);if(!h||!h.is_open){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='此日期店休，請改選週一至週五。';return}const duration=Number(service?.duration_minutes||60),end=new Date('2000-01-01T'+h.end_time),last=new Date(end.getTime()-duration*60000);$('time').min=String(h.start_time).slice(0,5);$('time').max=last.toTimeString().slice(0,5);$('hoursHint').textContent='可預約時間：'+String(h.start_time).slice(0,5)+'～'+last.toTimeString().slice(0,5)}
+function updateTimeLimits(){const service=services.find(s=>s.id===$('service').value);if(closures.some(c=>c.closure_date===$('date').value)){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='店家此日特殊休假，請改選其他日期。';return}const h=selectedHours();if(!h||!h.is_open){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='此日期店休，請改選週一至週五。';return}const duration=Number(service?.duration_minutes||60),end=new Date('2000-01-01T'+h.end_time),last=new Date(end.getTime()-duration*60000);$('time').min=String(h.start_time).slice(0,5);$('time').max=last.toTimeString().slice(0,5);$('hoursHint').textContent='可預約時間：'+String(h.start_time).slice(0,5)+'～'+last.toTimeString().slice(0,5)}
 async function init(){
  const cfg=window.CN_BOOKING_CONFIG||{};
  if(!cfg.url||!cfg.anonKey||cfg.anonKey.includes('請填入')){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='此店家的線上預約尚未完成公開設定，請聯絡店家。';return}
@@ -41,7 +41,7 @@ async function init(){
   sb.from('business_hours').select('day_of_week,is_open,start_time,end_time').eq('business_id',b.id)
  ]);
  if(sr.error||!sr.data?.length||hr.error||!hr.data?.length){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='預約資料尚未完整設定，請聯絡店家。';return}
- services=sr.data;hours=hr.data;
+ services=sr.data;hours=hr.data;closures=cr.data||[];
  const select=$('service');select.innerHTML='';services.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;select.append(o)});
  $('date').min=localDate();$('date').addEventListener('change',updateTimeLimits);$('service').addEventListener('change',updateTimeLimits);
 }
