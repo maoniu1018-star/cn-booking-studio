@@ -16,7 +16,7 @@
 <p id="storeDescription" class="muted">請選擇服務與方便洽談的日期、時間。</p>
 <section class="panel" id="bookingPanel">
 <form id="bookingForm">
-<div class="field"><label for="service">預約服務</label><select id="service" required><option value="">載入服務中…</option></select><div id="serviceInfo" class="service-info hidden" aria-live="polite"></div></div>
+<div class="field"><label for="service">預約服務</label><select id="service" required><option value="">載入服務中…</option></select></div>
 <div class="field"><label for="date">預約日期</label><input id="date" type="date" required></div>
 <div class="field"><label for="time">預約時間</label><input id="time" type="time" required><div class="small" id="hoursHint">營業時間：週一至週五 09:00～18:00</div></div>
 <div class="field"><label for="customer">姓名</label><input id="customer" maxlength="80" required autocomplete="name"></div>
@@ -36,17 +36,7 @@ let sb=null,business=null,hours=[],services=[],closures=[];
 function msg(t,type=''){const el=$('message');el.textContent=t;el.className='msg show '+type}
 function localDate(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function selectedHours(){if(!$('date').value)return null;return hours.find(h=>h.day_of_week===new Date($('date').value+'T00:00:00').getDay())||null}
-function renderServiceInfo(){
- const s=services.find(x=>x.id===$('service').value),box=$('serviceInfo');
- if(!s){box.classList.add('hidden');box.innerHTML='';return}
- box.classList.remove('hidden');box.innerHTML='';
- if(s.description){const desc=document.createElement('p');desc.textContent=s.description;box.append(desc)}
- const parts=[];
- if(s.price_mode==='fixed'&&s.price!==null)parts.push('NT$'+Number(s.price).toLocaleString('zh-TW'));
- else if(s.price_mode==='quote')parts.push('依需求報價');
- if(parts.length){const meta=document.createElement('div');meta.className='service-meta';meta.textContent=parts.join('　｜　');box.append(meta)}
- if(!s.description&&!parts.length)box.classList.add('hidden');
-}
+function renderServiceInfo(){}
 function updateTimeLimits(){
  const service=services.find(s=>s.id===$('service').value);
  if(closures.some(c=>c.closure_date===$('date').value)){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='店家此日特殊休假，請改選其他日期。';return}
