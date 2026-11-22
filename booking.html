@@ -5,29 +5,43 @@
 <meta name="theme-color" content="#fbf7f1"><title>線上預約｜CN Booking Studio</title>
 <style>
 :root{--ink:#382922;--muted:#806f63;--cream:#fbf7f1;--paper:#fffdf9;--gold:#b8955c;--line:#e8dcd0;--red:#a85b51;--green:#53765e}
-*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;line-height:1.65}button,input,select,textarea{font:inherit}.wrap{width:min(680px,calc(100% - 30px));margin:auto}.top{padding:22px 0;border-bottom:1px solid var(--line)}.brand{font:700 23px Georgia,serif}.brand small{display:block;font:10px sans-serif;letter-spacing:.2em;color:var(--muted)}main{padding:30px 0 55px}.eyebrow{font-size:11px;letter-spacing:.2em;color:var(--gold)}h1{font:700 clamp(28px,6vw,40px)/1.25 Georgia,"Noto Serif TC",serif;margin:8px 0}.muted{color:var(--muted)}.panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px;margin:16px 0}.field{margin:13px 0}.field label{display:block;font-weight:650;font-size:14px;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px;background:white;color:var(--ink);min-height:46px}textarea{min-height:90px}.btn{border:0;border-radius:999px;padding:13px 20px;background:var(--ink);color:white;cursor:pointer}.btn:disabled{opacity:.55}.msg{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:#f6ebe3;font-size:14px;overflow-wrap:anywhere}.msg.show{display:block}.msg.error{background:#f8e8e5;color:var(--red)}.msg.ok{background:#eaf1e8;color:var(--green)}.hidden{display:none!important}.small{font-size:12px;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;line-height:1.65}button,input,select,textarea{font:inherit}.wrap{width:min(680px,calc(100% - 30px));margin:auto}.top{padding:22px 0;border-bottom:1px solid var(--line)}.brand{font:700 23px Georgia,serif}.brand small{display:block;font:10px sans-serif;letter-spacing:.2em;color:var(--muted)}main{padding:30px 0 55px}.eyebrow{font-size:11px;letter-spacing:.2em;color:var(--gold)}h1{font:700 clamp(28px,6vw,40px)/1.25 Georgia,"Noto Serif TC",serif;margin:8px 0}.muted{color:var(--muted)}.panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px;margin:16px 0}.field{margin:13px 0}.field label{display:block;font-weight:650;font-size:14px;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px;background:white;color:var(--ink);min-height:46px}textarea{min-height:90px}.btn{border:0;border-radius:999px;padding:13px 20px;background:var(--ink);color:white;cursor:pointer}.btn:disabled{opacity:.55}.msg{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:#f6ebe3;font-size:14px;overflow-wrap:anywhere}.msg.show{display:block}.msg.error{background:#f8e8e5;color:var(--red)}.msg.ok{background:#eaf1e8;color:var(--green)}.hidden{display:none!important}.small{font-size:12px;color:var(--muted)}.service-info{margin-top:9px;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:#fbf7f1}.service-info strong{display:block;margin-bottom:4px}.service-info p{margin:4px 0;color:var(--muted);font-size:13px}.service-meta{font-size:13px;font-weight:650;color:var(--ink)}footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 </style></head>
 <body><header class="top"><div class="wrap"><div class="brand">CN Booking Studio<small>ONLINE BOOKING</small></div></div></header>
 <main class="wrap"><div class="eyebrow">ONLINE APPOINTMENT</div><h1 id="storeName">線上預約</h1><p id="storeDescription" class="muted">請選擇服務與方便洽談的日期、時間。</p>
 <section class="panel" id="bookingPanel"><form id="bookingForm">
-<div class="field"><label for="service">預約服務</label><select id="service" required><option value="">載入服務中…</option></select></div>
+<div class="field"><label for="service">預約服務</label><select id="service" required><option value="">載入服務中…</option></select><div id="serviceInfo" class="service-info hidden" aria-live="polite"></div></div>
 <div class="field"><label for="date">預約日期</label><input id="date" type="date" required></div>
 <div class="field"><label for="time">預約時間</label><input id="time" type="time" required><div class="small" id="hoursHint">營業時間：週一至週五 09:00～18:00</div></div>
 <div class="field"><label for="customer">姓名</label><input id="customer" maxlength="80" required autocomplete="name"></div>
 <div class="field"><label for="contact">聯絡方式（LINE ID 或 Email，擇一填寫）</label><input id="contact" maxlength="100" required autocomplete="off" placeholder="請填寫 LINE ID 或 Email"><div class="small">至少留一種聯絡方式，方便店家與您確認預約及交付檔案。</div></div>
-<div class="field"><label for="notes">備註（選填）</label><textarea id="notes" maxlength="1000"></textarea></div>
-<button id="submitBtn" class="btn" type="submit">送出預約</button><div id="message" class="msg"></div>
-</form></section>
-<p class="small">週六、週日休息。送出後預約狀態為「待確認」，店家確認後才算完成。請勿在備註填寫身分證字號或信用卡資料。</p>
-</main><footer>© 2026 CN Booking Studio</footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-config.js"></script>
-<script>
+<div class="field"><label for="notes">備註（選填）</label><textarea id="notes" maxlength="1000"></textarea><script>
 const $=id=>document.getElementById(id),slug=new URLSearchParams(location.search).get('store');
 let sb=null,business=null,hours=[],services=[],closures=[];
 function msg(t,type=''){const el=$('message');el.textContent=t;el.className='msg show '+type}
 function localDate(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function selectedHours(){if(!$('date').value)return null;return hours.find(h=>h.day_of_week===new Date($('date').value+'T00:00:00').getDay())||null}
-function updateTimeLimits(){const service=services.find(s=>s.id===$('service').value);if(closures.some(c=>c.closure_date===$('date').value)){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='店家此日特殊休假，請改選其他日期。';return}const h=selectedHours();if(!h||!h.is_open){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='此日期店休，請改選週一至週五。';return}const duration=Number(service?.duration_minutes||60),end=new Date('2000-01-01T'+h.end_time),last=new Date(end.getTime()-duration*60000);$('time').min=String(h.start_time).slice(0,5);$('time').max=last.toTimeString().slice(0,5);$('hoursHint').textContent='可預約時間：'+String(h.start_time).slice(0,5)+'～'+last.toTimeString().slice(0,5)}
+function renderServiceInfo(){
+ const s=services.find(x=>x.id===$('service').value),box=$('serviceInfo');
+ if(!s){box.classList.add('hidden');box.innerHTML='';return}
+ box.classList.remove('hidden');box.innerHTML='';
+ const title=document.createElement('strong');title.textContent=s.name;box.append(title);
+ if(s.description){const desc=document.createElement('p');desc.textContent=s.description;box.append(desc)}
+ const meta=document.createElement('div');meta.className='service-meta';
+ const parts=[Number(s.duration_minutes||60)+' 分鐘'];
+ if(s.price_mode==='fixed'&&s.price!==null)parts.push('NT$'+Number(s.price).toLocaleString('zh-TW'));
+ else if(s.price_mode==='quote')parts.push('依需求報價');
+ meta.textContent=parts.join('　｜　');box.append(meta);
+}
+function updateTimeLimits(){
+ const service=services.find(s=>s.id===$('service').value);
+ if(closures.some(c=>c.closure_date===$('date').value)){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='店家此日特殊休假，請改選其他日期。';return}
+ const h=selectedHours();
+ if(!h||!h.is_open){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='此日期店休，請改選週一至週五。';return}
+ const duration=Number(service?.duration_minutes||60),end=new Date('2000-01-01T'+h.end_time),last=new Date(end.getTime()-duration*60000);
+ $('time').min=String(h.start_time).slice(0,5);$('time').max=last.toTimeString().slice(0,5);
+ $('hoursHint').textContent='可預約時間：'+String(h.start_time).slice(0,5)+'～'+last.toTimeString().slice(0,5);
+}
 async function init(){
  const cfg=window.CN_BOOKING_CONFIG||{};
  if(!cfg.url||!cfg.anonKey||cfg.anonKey.includes('請填入')){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='此店家的線上預約尚未完成公開設定，請聯絡店家。';return}
@@ -37,20 +51,23 @@ async function init(){
  if(error||!b){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='找不到此店家，或店家目前未開放預約。';return}
  business=b;$('storeName').textContent=b.name;$('storeDescription').textContent=b.description||'請選擇服務與預約時間。';
  const [sr,hr,cr]=await Promise.all([
-  sb.from('services').select('id,name,duration_minutes,price,price_mode').eq('business_id',b.id).eq('is_active',true).order('created_at'),
+  sb.from('services').select('id,name,description,duration_minutes,price,price_mode').eq('business_id',b.id).eq('is_active',true).order('created_at'),
   sb.from('business_hours').select('day_of_week,is_open,start_time,end_time').eq('business_id',b.id),
   sb.from('business_closures').select('closure_date').eq('business_id',b.id)
  ]);
  if(sr.error||!sr.data?.length||hr.error||!hr.data?.length||cr.error){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='預約資料尚未完整設定，請聯絡店家。';return}
  services=sr.data;hours=hr.data;closures=cr.data||[];
- const select=$('service');select.innerHTML='';services.forEach(s=>{const o=document.createElement('option');o.value=s.id;const price=s.price_mode==='fixed'&&s.price!==null?'｜NT
- $('date').min=localDate();$('date').addEventListener('change',updateTimeLimits);$('service').addEventListener('change',updateTimeLimits);
+ const select=$('service');select.innerHTML='';
+ services.forEach(s=>{const o=document.createElement('option');o.value=s.id;const price=s.price_mode==='fixed'&&s.price!==null?'｜NT$'+Number(s.price).toLocaleString('zh-TW'):s.price_mode==='quote'?'｜依需求報價':'';o.textContent=s.name+price;select.append(o)});
+ $('date').min=localDate();$('date').addEventListener('change',updateTimeLimits);
+ $('service').addEventListener('change',()=>{renderServiceInfo();updateTimeLimits()});
+ renderServiceInfo();updateTimeLimits();
 }
 $('bookingForm').addEventListener('submit',async e=>{
  e.preventDefault();if(!sb||!business)return;
  if(closures.some(c=>c.closure_date===$('date').value)){msg('店家此日特殊休假，請選擇其他日期。','error');return}
  const h=selectedHours(),service=services.find(s=>s.id===$('service').value),start=$('time').value;
- if(!h||!h.is_open){msg('此日期店休，請選擇週一至週五。','error');return}
+ if(!h||!h.is_open){msg('此日期店休，請選擇其他日期。','error');return}
  if(!service||!start){msg('請選擇服務與預約時間。','error');return}
  const startM=Number(start.slice(0,2))*60+Number(start.slice(3,5)),openM=Number(String(h.start_time).slice(0,2))*60+Number(String(h.start_time).slice(3,5)),closeM=Number(String(h.end_time).slice(0,2))*60+Number(String(h.end_time).slice(3,5));
  if(startM<openM||startM+Number(service.duration_minutes||60)>closeM){msg('預約時間需在營業時間內，並預留完整服務時間。','error');return}
@@ -59,28 +76,7 @@ $('bookingForm').addEventListener('submit',async e=>{
   const payload={business_id:business.id,service_id:service.id,customer_name:$('customer').value.trim(),customer_contact:$('contact').value.trim(),appointment_date:$('date').value,start_time:start,notes:$('notes').value.trim(),status:'pending'};
   const {error}=await sb.from('bookings').insert(payload);
   if(error){if(error.code==='23505')throw new Error('這個時間已有其他預約，請改選其他時間。');throw error}
-  msg('預約已送出！目前狀態為待確認，請留意店家後續聯絡。','ok');$('bookingForm').reset();$('date').min=localDate();updateTimeLimits();
- }catch(err){msg('預約未成功：'+(err.message||'請稍後再試。'),'error')}
- finally{btn.disabled=false;btn.textContent='送出預約'}
-});
-init().catch(e=>{$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='載入失敗：'+(e.message||'請稍後再試。')});
-</script></body></html>+Number(s.price).toLocaleString('zh-TW'):s.price_mode==='quote'?'｜依需求報價':'';o.textContent=s.name+price;select.append(o)});
- $('date').min=localDate();$('date').addEventListener('change',updateTimeLimits);$('service').addEventListener('change',updateTimeLimits);
-}
-$('bookingForm').addEventListener('submit',async e=>{
- e.preventDefault();if(!sb||!business)return;
- if(closures.some(c=>c.closure_date===$('date').value)){msg('店家此日特殊休假，請選擇其他日期。','error');return}
- const h=selectedHours(),service=services.find(s=>s.id===$('service').value),start=$('time').value;
- if(!h||!h.is_open){msg('此日期店休，請選擇週一至週五。','error');return}
- if(!service||!start){msg('請選擇服務與預約時間。','error');return}
- const startM=Number(start.slice(0,2))*60+Number(start.slice(3,5)),openM=Number(String(h.start_time).slice(0,2))*60+Number(String(h.start_time).slice(3,5)),closeM=Number(String(h.end_time).slice(0,2))*60+Number(String(h.end_time).slice(3,5));
- if(startM<openM||startM+Number(service.duration_minutes||60)>closeM){msg('預約時間需在營業時間內，並預留完整服務時間。','error');return}
- const btn=$('submitBtn');btn.disabled=true;btn.textContent='送出中…';
- try{
-  const payload={business_id:business.id,service_id:service.id,customer_name:$('customer').value.trim(),customer_contact:$('contact').value.trim(),appointment_date:$('date').value,start_time:start,notes:$('notes').value.trim(),status:'pending'};
-  const {error}=await sb.from('bookings').insert(payload);
-  if(error){if(error.code==='23505')throw new Error('這個時間已有其他預約，請改選其他時間。');throw error}
-  msg('預約已送出！目前狀態為待確認，請留意店家後續聯絡。','ok');$('bookingForm').reset();$('date').min=localDate();updateTimeLimits();
+  msg('預約已送出！目前狀態為待確認，請留意店家後續聯絡。','ok');$('bookingForm').reset();$('date').min=localDate();renderServiceInfo();updateTimeLimits();
  }catch(err){msg('預約未成功：'+(err.message||'請稍後再試。'),'error')}
  finally{btn.disabled=false;btn.textContent='送出預約'}
 });
