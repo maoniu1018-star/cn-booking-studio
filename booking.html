@@ -40,12 +40,62 @@ function renderServiceInfo(){
  const s=services.find(x=>x.id===$('service').value),box=$('serviceInfo');
  if(!s){box.classList.add('hidden');box.innerHTML='';return}
  box.classList.remove('hidden');box.innerHTML='';
- const title=document.createElement('strong');title.textContent=s.name;box.append(title);
  if(s.description){const desc=document.createElement('p');desc.textContent=s.description;box.append(desc)}
  const parts=[];
- if(s.price_mode==='fixed'&&s.price!==null)parts.push('NT$'+Number(s.price).toLocaleString('zh-TW'));
+ if(s.price_mode==='fixed'&&s.price!==null)parts.push('NT
+function updateTimeLimits(){
+ const service=services.find(s=>s.id===$('service').value);
+ if(closures.some(c=>c.closure_date===$('date').value)){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='店家此日特殊休假，請改選其他日期。';return}
+ const h=selectedHours();
+ if(!h||!h.is_open){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='此日期店休，請改選週一至週五。';return}
+ const duration=Number(service?.duration_minutes||60),end=new Date('2000-01-01T'+h.end_time),last=new Date(end.getTime()-duration*60000);
+ $('time').min=String(h.start_time).slice(0,5);$('time').max=last.toTimeString().slice(0,5);
+ $('hoursHint').textContent='可預約時間：'+String(h.start_time).slice(0,5)+'～'+last.toTimeString().slice(0,5);
+}
+async function init(){
+ const cfg=window.CN_BOOKING_CONFIG||{};
+ if(!cfg.url||!cfg.anonKey||cfg.anonKey.includes('請填入')){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='此店家的線上預約尚未完成公開設定，請聯絡店家。';return}
+ if(!slug||!window.supabase){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='預約頁載入失敗，請稍後再試。';return}
+ sb=window.supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:false,autoRefreshToken:false}});
+ const {data:b,error}=await sb.from('businesses').select('id,name,description').eq('slug',slug).eq('is_active',true).maybeSingle();
+ if(error||!b){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='找不到此店家，或店家目前未開放預約。';return}
+ business=b;$('storeName').textContent=b.name;$('storeDescription').textContent=b.description||'請選擇服務與預約時間。';
+ const [sr,hr,cr]=await Promise.all([
+  sb.from('services').select('id,name,description,duration_minutes,price,price_mode').eq('business_id',b.id).eq('is_active',true).order('created_at'),
+  sb.from('business_hours').select('day_of_week,is_open,start_time,end_time').eq('business_id',b.id),
+  sb.from('business_closures').select('closure_date').eq('business_id',b.id)
+ ]);
+ if(sr.error||!sr.data?.length||hr.error||!hr.data?.length||cr.error){$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='預約資料尚未完整設定，請聯絡店家。';return}
+ services=sr.data;hours=hr.data;closures=cr.data||[];
+ const select=$('service');select.innerHTML='';
+ services.forEach(s=>{const o=document.createElement('option');o.value=s.id;const price=s.price_mode==='fixed'&&s.price!==null?'｜NT$'+Number(s.price).toLocaleString('zh-TW'):s.price_mode==='quote'?'｜依需求報價':'';o.textContent=s.name+price;select.append(o)});
+ $('date').min=localDate();$('date').addEventListener('change',updateTimeLimits);
+ $('service').addEventListener('change',()=>{renderServiceInfo();updateTimeLimits()});
+ renderServiceInfo();updateTimeLimits();
+}
+$('bookingForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!sb||!business)return;
+ if(closures.some(c=>c.closure_date===$('date').value)){msg('店家此日特殊休假，請選擇其他日期。','error');return}
+ const h=selectedHours(),service=services.find(s=>s.id===$('service').value),start=$('time').value;
+ if(!h||!h.is_open){msg('此日期店休，請選擇其他日期。','error');return}
+ if(!service||!start){msg('請選擇服務與預約時間。','error');return}
+ const startM=Number(start.slice(0,2))*60+Number(start.slice(3,5)),openM=Number(String(h.start_time).slice(0,2))*60+Number(String(h.start_time).slice(3,5)),closeM=Number(String(h.end_time).slice(0,2))*60+Number(String(h.end_time).slice(3,5));
+ if(startM<openM||startM+Number(service.duration_minutes||60)>closeM){msg('預約時間需在營業時間內，並預留完整服務時間。','error');return}
+ const btn=$('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+ try{
+  const payload={business_id:business.id,service_id:service.id,customer_name:$('customer').value.trim(),customer_contact:$('contact').value.trim(),appointment_date:$('date').value,start_time:start,notes:$('notes').value.trim(),status:'pending'};
+  const {error}=await sb.from('bookings').insert(payload);
+  if(error){if(error.code==='23505')throw new Error('這個時間已有其他預約，請改選其他時間。');throw error}
+  msg('預約已送出！目前狀態為待確認，請留意店家後續聯絡。','ok');$('bookingForm').reset();$('date').min=localDate();renderServiceInfo();updateTimeLimits();
+ }catch(err){msg('預約未成功：'+(err.message||'請稍後再試。'),'error')}
+ finally{btn.disabled=false;btn.textContent='送出預約'}
+});
+init().catch(e=>{$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='載入失敗：'+(e.message||'請稍後再試。')});
+</script>
+</body></html>+Number(s.price).toLocaleString('zh-TW'));
  else if(s.price_mode==='quote')parts.push('依需求報價');
  if(parts.length){const meta=document.createElement('div');meta.className='service-meta';meta.textContent=parts.join('　｜　');box.append(meta)}
+ if(!s.description&&!parts.length)box.classList.add('hidden');
 }
 function updateTimeLimits(){
  const service=services.find(s=>s.id===$('service').value);
