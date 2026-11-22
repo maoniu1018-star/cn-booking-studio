@@ -42,7 +42,11 @@ function renderServiceInfo(){
  box.classList.remove('hidden');box.innerHTML='';
  if(s.description){const desc=document.createElement('p');desc.textContent=s.description;box.append(desc)}
  const parts=[];
- if(s.price_mode==='fixed'&&s.price!==null)parts.push('NT
+ if(s.price_mode==='fixed'&&s.price!==null)parts.push('NT$'+Number(s.price).toLocaleString('zh-TW'));
+ else if(s.price_mode==='quote')parts.push('依需求報價');
+ if(parts.length){const meta=document.createElement('div');meta.className='service-meta';meta.textContent=parts.join('　｜　');box.append(meta)}
+ if(!s.description&&!parts.length)box.classList.add('hidden');
+}
 function updateTimeLimits(){
  const service=services.find(s=>s.id===$('service').value);
  if(closures.some(c=>c.closure_date===$('date').value)){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='店家此日特殊休假，請改選其他日期。';return}
