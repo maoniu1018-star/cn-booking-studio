@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#fbf7f1"><title>線上預約｜CN Booking Studio</title>
 <style>
 :root{--ink:#382922;--muted:#806f63;--cream:#fbf7f1;--paper:#fffdf9;--gold:#b8955c;--line:#e8dcd0;--red:#a85b51;--green:#53765e}
-*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;line-height:1.65}button,input,select,textarea{font:inherit}.wrap{width:min(680px,calc(100% - 30px));margin:auto}.top{padding:22px 0;border-bottom:1px solid var(--line)}.brand{font:700 23px Georgia,serif}.brand small{display:block;font:10px sans-serif;letter-spacing:.2em;color:var(--muted)}main{padding:30px 0 55px}.eyebrow{font-size:11px;letter-spacing:.2em;color:var(--gold)}h1{font:700 clamp(28px,6vw,40px)/1.25 Georgia,"Noto Serif TC",serif;margin:8px 0}.muted{color:var(--muted)}.panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px;margin:16px 0}.field{margin:13px 0}.field label{display:block;font-weight:650;font-size:14px;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px;background:white;color:var(--ink);min-height:46px}textarea{min-height:90px}.btn{border:0;border-radius:999px;padding:13px 20px;background:var(--ink);color:white;cursor:pointer}.btn:disabled{opacity:.55}.msg{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:#f6ebe3;font-size:14px;overflow-wrap:anywhere}.msg.show{display:block}.msg.error{background:#f8e8e5;color:var(--red)}.msg.ok{background:#eaf1e8;color:var(--green)}.hidden{display:none!important}.small{font-size:12px;color:var(--muted)}.service-info{margin-top:9px;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:#fbf7f1}.service-info strong{display:none!important}.service-info p{margin:4px 0;color:var(--muted);font-size:13px}.service-meta{font-size:13px;font-weight:650;color:var(--ink)}footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;line-height:1.65}button,input,select,textarea{font:inherit}.wrap{width:min(680px,calc(100% - 30px));margin:auto}.top{padding:22px 0;border-bottom:1px solid var(--line)}.brand{font:700 23px Georgia,serif}.brand small{display:block;font:10px sans-serif;letter-spacing:.2em;color:var(--muted)}main{padding:30px 0 55px}.eyebrow{font-size:11px;letter-spacing:.2em;color:var(--gold)}h1{font:700 clamp(28px,6vw,40px)/1.25 Georgia,"Noto Serif TC",serif;margin:8px 0}.muted{color:var(--muted)}.panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px;margin:16px 0}.field{margin:13px 0}.field label{display:block;font-weight:650;font-size:14px;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px;background:white;color:var(--ink);min-height:46px}textarea{min-height:90px}.btn{border:0;border-radius:999px;padding:13px 20px;background:var(--ink);color:white;cursor:pointer}.btn:disabled{opacity:.55}.msg{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:#f6ebe3;font-size:14px;overflow-wrap:anywhere}.msg.show{display:block}.msg.error{background:#f8e8e5;color:var(--red)}.msg.ok{background:#eaf1e8;color:var(--green)}.hidden{display:none!important}.small{font-size:12px;color:var(--muted)}.service-info{margin-top:9px;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:#fbf7f1}.service-info strong{display:none!important}.service-info p{margin:4px 0;color:var(--muted);font-size:13px}.service-meta{font-size:13px;font-weight:650;color:var(--ink)}.selected-price{margin-top:9px;padding:11px 14px;border:1px solid var(--line);border-radius:11px;background:#fbf7f1;font-size:14px;color:var(--muted)}.selected-price strong{display:block;margin-top:2px;font-size:21px;color:var(--ink)}footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 </style>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <p id="storeDescription" class="muted">請選擇服務與方便洽談的日期、時間。</p>
 <section class="panel" id="bookingPanel">
 <form id="bookingForm">
-<div class="field"><label for="service">預約服務</label><select id="service" required><option value="">載入服務中…</option></select></div>
+<div class="field"><label for="service">預約服務</label><select id="service" required><option value="">載入服務中…</option></select><div id="selectedPrice" class="selected-price hidden" aria-live="polite"></div></div>
 <div class="field"><label for="date">預約日期</label><input id="date" type="date" required></div>
 <div class="field"><label for="time">預約時間</label><input id="time" type="time" required><div class="small" id="hoursHint">營業時間：週一至週五 09:00～18:00</div></div>
 <div class="field"><label for="customer">姓名</label><input id="customer" maxlength="80" required autocomplete="name"></div>
@@ -36,7 +36,17 @@ let sb=null,business=null,hours=[],services=[],closures=[];
 function msg(t,type=''){const el=$('message');el.textContent=t;el.className='msg show '+type}
 function localDate(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function selectedHours(){if(!$('date').value)return null;return hours.find(h=>h.day_of_week===new Date($('date').value+'T00:00:00').getDay())||null}
-function renderServiceInfo(){}
+function renderServiceInfo(){
+ const service=services.find(s=>s.id===$('service').value),el=$('selectedPrice');
+ if(!service){el.classList.add('hidden');el.textContent='';return}
+ if(service.price_mode==='fixed'&&service.price!==null){
+  el.classList.remove('hidden');el.innerHTML='本次服務價格<strong>NT$ '+Number(service.price).toLocaleString('zh-TW')+'</strong>';
+ }else if(service.price_mode==='quote){
+  el.classList.remove('hidden');el.textContent='本次服務價格：依需求報價';
+ }else{
+  el.classList.add('hidden');el.textContent='';
+ }
+}
 function updateTimeLimits(){
  const service=services.find(s=>s.id===$('service').value);
  if(closures.some(c=>c.closure_date===$('date').value)){$('time').removeAttribute('min');$('time').removeAttribute('max');$('hoursHint').textContent='店家此日特殊休假，請改選其他日期。';return}
