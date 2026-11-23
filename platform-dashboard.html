@@ -39,7 +39,7 @@ function renderServices(){
  services.forEach(s=>{
   const row=document.createElement('div');row.className='closure-item';row.style.flexWrap='wrap';
   const info=document.createElement('div');info.style.flex='1 1 220px';
-  const title=document.createElement('strong');title.textContent=s.name;info.append(title);
+  const title=document.createElement('strong');title.textContent=String(s.name||'').replace(/\s*[|｜]\s*\d+\s*分鐘\s*$/,'').trim();info.append(title);
   const detail=document.createElement('div');detail.className='small';
   detail.textContent=(s.price_mode==='fixed'&&s.price!==null?'NT$'+Number(s.price).toLocaleString('zh-TW'):s.price_mode==='quote'?'依需求報價':'暫不顯示價格')+'｜'+(s.is_active?'上架中':'已下架');
   info.append(detail);
