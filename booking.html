@@ -50,7 +50,7 @@ function renderServiceInfo(){
  if(!service){el.classList.add('hidden');el.textContent='';return}
  if(service.price_mode==='fixed'&&service.price!==null){
   el.classList.remove('hidden');el.innerHTML='本次服務價格<strong>NT$ '+Number(service.price).toLocaleString('zh-TW')+'</strong>';
- }else if(service.price_mode==='quote){
+ }else if(service.price_mode==='quote'){
   el.classList.remove('hidden');el.textContent='本次服務價格：依需求報價';
  }else{
   el.classList.add('hidden');el.textContent='';
@@ -111,7 +111,7 @@ $('bookingForm').addEventListener('submit',async e=>{
  }catch(err){msg('預約未成功：'+(err.message||'請稍後再試。'),'error')}
  finally{btn.disabled=false;btn.textContent='送出預約'}
 });
-init().catch(e=>{$('bookingPanel').classList.add('hidden');$('storeDescription').textContent='載入失敗：'+(e.message||'請稍後再試。')});
+init().catch(e=>{const select=$('service');select.innerHTML='<option value="">載入失敗，請重新整理</option>';const detail='預約資料載入失敗：'+(e.message||'請稍後再試。');$('hoursHint').textContent=detail;msg(detail,'error');});
 </script>
 </body></html>+Number(s.price).toLocaleString('zh-TW'));
  else if(s.price_mode==='quote')parts.push('依需求報價');
